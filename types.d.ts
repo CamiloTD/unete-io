@@ -9,6 +9,6 @@ declare const Socket: (
     }
 ) => any;
 
-declare class Server extends socket_io {
+declare class Server extends (SocketIO as any) {
     constructor (functions: any, server?: any);
 }
