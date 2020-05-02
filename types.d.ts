@@ -1,4 +1,4 @@
-import socket_io from "socket.io";
+import SocketIO from "socket.io";
 
 declare const Socket: (
     sock: SocketIOClient.Socket | string | Promise<any>,
