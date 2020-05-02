@@ -15,7 +15,7 @@ Unete-IO is an RPC library that takes any vanilla Javascript (or Typescript) mod
 UneteIO is a regular JS module, install it by using:
 
 ```bash
-$ npm i unete-io
+$ npm i @unete/io
 ```
 
 ## Client

@@ -1,6 +1,6 @@
 {
-  "name": "unete-io",
-  "version": "1.4.5",
+  "name": "@unete/io",
+  "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "types": "types.d.ts",
