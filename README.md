@@ -1,14 +1,12 @@
 # Unete-IO
 
 JS Minimalist, Flexible & Powerful microservices & api library
-Docs at: https://supercamilotd.gitbook.io/unete-io/
 
 🚨 **ALERT:** Unete-IO is the socket.io library of the **Unete** ecosystem, if you want to mount a server, please go to **unete-serve**. 🚨
 
 ## What's Unete-IO?
 
-![alt Unete-IO](https://lh6.googleusercontent.com/JMZfXmqcyc1A_UiroRCXMkijYZaddPZtM4EteiJc5f5S4y3jCGL46Dv5y4eaum0AV9Mc1z4E4lN2yKqOQb42=w1920-h542)
-
+![https://i.ibb.co/zSh4bQZ/UneteIO.png](https://i.ibb.co/zSh4bQZ/UneteIO.png)
 Unete-IO is an RPC library that takes any vanilla Javascript (or Typescript) module and exports it to the web as a realtime API.
 
 ## Installation
