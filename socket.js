@@ -6,91 +6,23 @@ const { from } = require('rxjs/operators');
 const OBSERVABLE = 1;
 
 function Socket (sock, functions = {}, { with_proxy=true, with_observables = true, private_functions } = {}) {
-
-    {//? @note (Main) Init
-        {//? @note (Init) Initialize exported methods
-            functions = functions || {};
-            if(functions instanceof Promise) {
-                functions.then((x) => {
-                    calls = functions = x;
-
-                    x.$public = () => destructureMap(functions);
-                });
-                
-                functions = {};
-            }
-
-            functions.$public = () => destructureMap(functions);
-        }
-
-        {//? @note (Init) Connect & Initialize Handler Proxy
-            var Handler; initializeHandler();
-            sock = typeof sock === "string"? io.connect(sock) : sock;
     
-            if(sock instanceof Promise) {
-                sock.then((url) => {
-                    sock = io.connect(url);
-                    initializeSocket();
-                });
-            } else initializeSocket();
-        }
-
-        {//? @note (Init) Define status vars
-            var calls = functions;
-            var handlers = {
-                success: {},
-                failure: {}
-            };
-
-            var _iid = 0;
-
-            var connection_id = Math.floor(Date.now() * Math.random());
-            var id = () => `${connection_id}-${++_iid}`;
-
-            var handler = Handler(call);
-            var observables = {};
-            var my_observables = new Set()
-        }
-    }
-
-    {//? @note (Main) Handle Observables Events
-        if(with_observables) {
-            sock.on('obs', function ({ iid, data }) {
-                if(!observables[iid]) observables[iid] = new ReplaySubject();
-
-                observables[iid].next(data);
-            });
-
-            sock.on('obs-complete', function ({ iid, data }) {
-                if(!observables[iid]) observables[iid] = new ReplaySubject();
-
-                observables[iid].complete();
-            });
-
-            sock.on('obs-error', function ({ iid, exc }) {
-                if(!observables[iid]) observables[iid] = new ReplaySubject();
-
-                observables[iid].error(exc);
-            });
-        }
-    }
-
     {//? @note (Main) Define Functions
         {//? @note (Functions) Promise Handlers
-            function removeHandlers (iid) {
+            var removeHandlers = function (iid) {
                 delete handlers.success[iid];
                 delete handlers.failure[iid];
             }
 
-            function setSuccessHandler (iid, fn) {
+            var setSuccessHandler = function (iid, fn) {
                 handlers.success[iid] = fn;
             }
 
-            function setFailureHandler (iid, fn) {
+            var setFailureHandler = function (iid, fn) {
                 handlers.failure[iid] = fn;
             }
 
-            function addToHandler (obj, base=handler, route=[]) {
+            var addToHandler = function (obj, base=handler, route=[]) {
                 for(let i in obj) {
                     if(typeof obj[i] === "object" && !Array.isArray(obj[i]) && !Array.isArray(obj[i].arguments)) {
                         if(!base[i]) base[i] = {};
@@ -104,14 +36,14 @@ function Socket (sock, functions = {}, { with_proxy=true, with_observables = tru
         }
 
         {//? @note (Functions) Utility
-            function getFunction (path) {
+            var getFunction = function (path) {
                 let pointer = calls;
                 for(let i=0, l=path.length;i<l;i++) pointer = pointer[path[i]];
                 
                 return pointer;
             }
 
-            function destructureMap (obj, path=[]) {
+            var destructureMap = function (obj, path=[]) {
                 const base = {};
 
                 for(let i in obj) {
@@ -128,7 +60,7 @@ function Socket (sock, functions = {}, { with_proxy=true, with_observables = tru
         }
 
         {//? @note (Functions) Main
-            function initializeSocket () {
+            var initializeSocket = function () {
                 //* Server side, onCallReceived
                 sock.on('call', async ({ path, iid, args, cb }) => {
                     try {
@@ -206,7 +138,7 @@ function Socket (sock, functions = {}, { with_proxy=true, with_observables = tru
                 });
             }
         
-            function initializeHandler () {
+            var initializeHandler = function() {
                 if(with_proxy) {
                     Handler = function Handler (cb, base_route = []) {
                         let proxy = new Proxy(function () {}, {
@@ -244,7 +176,7 @@ function Socket (sock, functions = {}, { with_proxy=true, with_observables = tru
                 }
             }
 
-            async function call (routes, ...args) {
+            var call = async function (routes, ...args) {
                 if(sock instanceof Promise) await sock;
         
                 await Connect();
@@ -293,6 +225,74 @@ function Socket (sock, functions = {}, { with_proxy=true, with_observables = tru
         }
     }
 
+    {//? @note (Main) Init
+        {//? @note (Init) Initialize exported methods
+            functions = functions || {};
+            if(functions instanceof Promise) {
+                functions.then((x) => {
+                    calls = functions = x;
+
+                    x.$public = () => destructureMap(functions);
+                });
+                
+                functions = {};
+            }
+
+            functions.$public = () => destructureMap(functions);
+        }
+
+        {//? @note (Init) Connect & Initialize Handler Proxy
+            var Handler; initializeHandler();
+            sock = typeof sock === "string"? io.connect(sock) : sock;
+    
+            if(sock instanceof Promise) {
+                sock.then((url) => {
+                    sock = io.connect(url);
+                    initializeSocket();
+                });
+            } else initializeSocket();
+        }
+
+        {//? @note (Init) Define status vars
+            var calls = functions;
+            var handlers = {
+                success: {},
+                failure: {}
+            };
+
+            var _iid = 0;
+
+            var connection_id = Math.floor(Date.now() * Math.random());
+            var id = () => `${connection_id}-${++_iid}`;
+
+            var handler = Handler(call);
+            var observables = {};
+            var my_observables = new Set()
+        }
+    }
+
+    {//? @note (Main) Handle Observables Events
+        if(with_observables) {
+            sock.on('obs', function ({ iid, data }) {
+                if(!observables[iid]) observables[iid] = new ReplaySubject();
+
+                observables[iid].next(data);
+            });
+
+            sock.on('obs-complete', function ({ iid, data }) {
+                if(!observables[iid]) observables[iid] = new ReplaySubject();
+
+                observables[iid].complete();
+            });
+
+            sock.on('obs-error', function ({ iid, exc }) {
+                if(!observables[iid]) observables[iid] = new ReplaySubject();
+
+                observables[iid].error(exc);
+            });
+        }
+    }
+
     return handler;
 }
 {//? @note Exports
@@ -304,7 +304,7 @@ function Socket (sock, functions = {}, { with_proxy=true, with_observables = tru
     var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
     var ARGUMENT_NAMES = /([^\s,]+)/g;
 
-    function getParamNames(func) {
+    var getParamNames = function (func) {
         var fnStr = func.toString().replace(STRIP_COMMENTS, '');
         var result = fnStr.slice(fnStr.indexOf('(')+1, fnStr.indexOf(')')).match(ARGUMENT_NAMES);
         if(result === null)
